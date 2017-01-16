@@ -27,4 +27,25 @@ class TBoard {
         
 };
 
+class CBoard {
+    private:
+        int** boardState;
+        int numMoves;
+    public:
+        static const int NUMROWS = 6;
+        static const int NUMCOLUMNS = 7;
+        CBoard();
+        ~CBoard();
+        int** getBoard() {return boardState;}
+        int getNumMoves() {return numMoves;}
+        std::string numToStr(int num);
+        int strToNum(std::string letter);
+        void reset();
+        void print();
+        int drop(int c, int color);
+        int checkWin();
+        bool checkValid(int c);
+        void undo(int previousColumn);
+};
+
 #endif

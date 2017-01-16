@@ -100,58 +100,99 @@ void tplayOnePlayer() {
     delete board;
 }
 
-int main() {
-    playOnePlayer();
-/*
-    TBoard *board = new TBoard();
-    TAgent *computerPlayer = new TAgent(1, board);
-    computerPlayer->updateBoard(0,0,1,1);
-    computerPlayer->updateBoard(0,1,1,2);
-    computerPlayer->updateBoard(0,2,1,1);
-    computerPlayer->updateBoard(1,0,1,2);
-    computerPlayer->updateBoard(1,1,1,1);
-    computerPlayer->updateBoard(1,2,1,2);
-    board->print();
-//    std::cout << computerPlayer->makeMove()[1];
-
-
-    TBoard *board = new TBoard();
-    TAgent *computerPlayer = new TAgent(1, board);
-//    computerPlayer->printValueTree(computerPlayer->getTree());
-    Tree *t = computerPlayer->getTree();
-    std::cout << t->getChildren().size();
-    for (int i = 0; i < t->getChildren().size(); i++) {
-        std::cout << "|" << t->getChildren()[i]->getValue() << "|";
-//        for (int j = 0; j < t->getChildren()[i]->getChildren().size(); j++) {
-//            std::cout << " " << t->getChildren()[i]->getChildren()[j]->getValue() << " ";
- //           for (int k = 0; k < t->getChildren()[i]->getChildren()[j]->getChildren().size(); k++) {
- //               std::cout << " " << t->getChildren()[i]->getChildren()[j]->getChildren()[k]->getValue() << " ";
- //           }
- //           std::cout << std::endl;
- //       }
-        
- //       std::cout << std::endl;
+void cplayTwoPlayer() {
+    using namespace std;
+    bool again = true;
+    string yon = "";
+    CBoard *board = new CBoard();
+    while (again) {
+        int row = 0;
+        int column = 0;
+        int turn = 1;
+        int valid = 0;
+        board->reset();
+        while (board->checkWin() == 0 && board->getNumMoves() < 42) {
+            board->print();
+            cout << "Please enter column for move: (0-6) ";
+            cin >> column;
+            valid = board->drop(column, turn);
+            if (valid == -1) {
+                cout << "Please make a valid move" << endl;
+            } else {
+                turn = 3 - turn;
+            }
+        }
+        board->print();
+        if (board->getNumMoves() < 42 || board->checkWin() != 0) {
+            cout << "Congratulations: " << board->numToStr(board->checkWin()) << "'s, you win!" << endl;
+            cout << "Play again? (y/n) " << endl;
+            board->reset();
+        } else {
+            cout << "Stalemate, play again? (y/n) " << endl;
+            board->reset();
+        }
+        cin >> yon;
+        if (yon == "n") {
+            again = false;
+        }
     }
-    
-
-    
-//    playOnePlayer();
-
-/*
-    TBoard *board = new TBoard();
-//    Tree *t = new Tree(board, 0, 1);
-    TBoard *computerBoard = new TBoard();
-    TAgent *computerPlayer = new TAgent(1, computerBoard);
-    std::cout << "Row of move " << computerPlayer->makeMove()[0] << std::endl;
-    std::cout << "Column of move " << computerPlayer->makeMove()[1] << std::endl;
-    computerPlayer->updateBoard(0, 0, 1);
-    board->makeMove(0, 0, "X");
-    board->print();
-    
-
-//    delete t;
-    delete computerPlayer;
     delete board;
-//    delete board;
+}
+
+int main() {
+//    cplayTwoPlayer();
+
+    tplayOnePlayer();
+/* Test code for TTT
+            TBoard *board = new TBoard();
+            TAgent *computerPlayer = new TAgent(1, board);
+            computerPlayer->updateBoard(0,0,1,1);
+            computerPlayer->updateBoard(0,1,1,2);
+            computerPlayer->updateBoard(0,2,1,1);
+            computerPlayer->updateBoard(1,0,1,2);
+            computerPlayer->updateBoard(1,1,1,1);
+            computerPlayer->updateBoard(1,2,1,2);
+            board->print();
+        //    std::cout << computerPlayer->makeMove()[1];
+
+
+            TBoard *board = new TBoard();
+            TAgent *computerPlayer = new TAgent(1, board);
+        //    computerPlayer->printValueTree(computerPlayer->getTree());
+            Tree *t = computerPlayer->getTree();
+            std::cout << t->getChildren().size();
+            for (int i = 0; i < t->getChildren().size(); i++) {
+                std::cout << "|" << t->getChildren()[i]->getValue() << "|";
+        //        for (int j = 0; j < t->getChildren()[i]->getChildren().size(); j++) {
+        //            std::cout << " " << t->getChildren()[i]->getChildren()[j]->getValue() << " ";
+        //           for (int k = 0; k < t->getChildren()[i]->getChildren()[j]->getChildren().size(); k++) {
+        //               std::cout << " " << t->getChildren()[i]->getChildren()[j]->getChildren()[k]->getValue() << " ";
+        //           }
+        //           std::cout << std::endl;
+        //       }
+                
+        //       std::cout << std::endl;
+            }
+            
+
+            
+        //    playOnePlayer();
+
+        /*
+            TBoard *board = new TBoard();
+        //    Tree *t = new Tree(board, 0, 1);
+            TBoard *computerBoard = new TBoard();
+            TAgent *computerPlayer = new TAgent(1, computerBoard);
+            std::cout << "Row of move " << computerPlayer->makeMove()[0] << std::endl;
+            std::cout << "Column of move " << computerPlayer->makeMove()[1] << std::endl;
+            computerPlayer->updateBoard(0, 0, 1);
+            board->makeMove(0, 0, "X");
+            board->print();
+            
+
+        //    delete t;
+            delete computerPlayer;
+            delete board;
+        //    delete board;
 */
 }
