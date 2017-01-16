@@ -93,15 +93,15 @@ int TBoard::checkWin() {
                 
                 //Horizontal check
                 if (boardState[r][c] == boardState[r][c + 1] && boardState[r][c] == boardState[r][c + 2]) {
-                    std::cout << "Horizontal win in row: " << r << std::endl;
+//                    std::cout << "Horizontal win in row: " << r << std::endl;
                     return boardState[r][c];
                 //Vertical check
                 } else if (boardState[r][c] == boardState[r + 1][c] && boardState[r][c] == boardState[r + 2][c]) {
-                    std::cout << "Vertical win in column: " << c << std::endl;
+//                    std::cout << "Vertical win in column: " << c << std::endl;
                     return boardState[r][c];
                 //Left to right diagonal
                 } else if (boardState[r][c] == boardState[r + 1][c + 1] && boardState[r][c] == boardState[r + 2][c + 2]) {
-                    std::cout << "Left to right win" << std::endl;
+//                    std::cout << "Left to right win" << std::endl;
                     return boardState[r][c];
                 }
                 //Right to left diagonal
