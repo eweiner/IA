@@ -66,7 +66,7 @@ void tplayOnePlayer() {
                 break;
             }
             board->print();
-            while (valid < 0) {
+            while (valid >= 0) {
                 cout << board->numToStr(2) <<" Please enter row for move: (0-2) ";
                 cin >> row;
                 cout << "Please enter column for move: (0-2) ";
@@ -77,6 +77,7 @@ void tplayOnePlayer() {
                     cout << "Please make a valid move" << endl;
                 } else {
                     turn = 1 - turn;
+                    break;
                 }
             }
         }
@@ -99,6 +100,7 @@ void tplayOnePlayer() {
     delete computer;
     delete board;
 }
+
 
 void cplayTwoPlayer() {
     using namespace std;
@@ -140,9 +142,9 @@ void cplayTwoPlayer() {
 }
 
 int main() {
-//    cplayTwoPlayer();
+    cplayTwoPlayer();
 
-    tplayOnePlayer();
+//    tplayOnePlayer();
 /* Test code for TTT
             TBoard *board = new TBoard();
             TAgent *computerPlayer = new TAgent(1, board);
