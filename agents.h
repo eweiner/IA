@@ -13,11 +13,12 @@ class Tree {
         std::vector<Tree*> children;
         TBoard *board;
         int previousCoordinate[2];
+        void generateTree(int computerPlayer, int maxDepth, int depth);
     public:
         int checkThree(int space1, int space2, int space3);
         int numTwos(int player, TBoard *board);
         double theuristic(int computerPlayer, TBoard *board);
-        void generateTree(int computerPlayer, int maxDepth, int depth);
+        
         Tree(TBoard *board, int depth, int player);
  //       Tree(int**boardState, int turn, int depth);
         ~Tree();
@@ -33,7 +34,7 @@ class TAgent {
         TBoard *board;
     public:
         bool isCorner(int r, int c);
-        TAgent(int computerPlayer, TBoard *emptyBoard);
+        TAgent(int computerPlayer, TBoard *startingBoard);
         ~TAgent();
         int* makeMove();
         void updateBoard(int row, int column, int player, int mover);
@@ -42,5 +43,43 @@ class TAgent {
         void reset() {board->reset();}
 };
 
+class CTree {
+    private:
+        int depth;
+        double value;
+        int nextMoveIndex;
+        std::vector<CTree*> children;
+        CBoard *board;
+        int previousCoordinate;
+        void generateTree(int computerPlayer, int maxDepth, int depth);
+    public:
+        int check4for3(int space1, int space2, int space3, int space4);
+        int check4for2(int space1, int space2, int space3, int space4);
+        int numThrees(int player, CBoard *board);
+        int numTwos(int player, CBoard *board);
+        double cheuristic(int computerPlayer, CBoard *board);
+        CTree(CBoard *board, int depth, int player);
+ //       Tree(int**boardState, int turn, int depth);
+        ~CTree();
+        void printPath();
+        std::vector<CTree*> getChildren(){return children;}
+        double getValue() {return value;}
+        void setValue(double value) {this->value = value;}
+};
 
+class CAgent {
+    private:
+        int color;
+        CTree *t;
+        CBoard *board;
+    public:
+        CAgent(int computerPlayer, CBoard *startingBoard);
+        ~CAgent();
+        int makeMove();
+        void updateBoard(int column, int mover);
+        void printValueTree(CTree *t);
+        CTree* getTree() {return t;}
+        void reset() {board->reset();}
+        int getColor() {return color;}
+};
 #endif

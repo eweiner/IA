@@ -141,8 +141,65 @@ void cplayTwoPlayer() {
     delete board;
 }
 
+void cplayerOnePlayer() {
+    using namespace std;
+    bool again = true;
+    string yon = "";
+    int computerMove;
+    CBoard *board = new CBoard();
+    CBoard *computerBoard = new CBoard();
+    CAgent *computer = new CAgent(1, computerBoard);
+    while (again) {
+        int row = 0;
+        int column = 0;
+        int turn = 1;
+        int valid = 0;
+        board->reset();
+        while (board->checkWin() == 0 && board->getNumMoves() < 42) {
+            computerMove = computer->makeMove();
+            computer->updateBoard(computerMove, computer->getColor());
+            board->drop(computerMove, computer->getColor());
+            if (board->checkWin() != 0 || board-> getNumMoves() == 42) {
+                break;
+            }
+            board->print();
+            cout << "Please enter column for move: (0-6) ";
+            cin >> column;
+            valid = board->drop(column, 2);
+            if (valid == -1) {
+                cout << "Please make a valid move" << endl;
+            } else {
+                computer->updateBoard(column, 2);
+            }
+        }
+        board->print();
+        if (board->getNumMoves() < 42 && board->checkWin() != 0) {
+            cout << "Congratulations: " << board->numToStr(board->checkWin()) << "'s, you win!" << endl;
+            cout << "Play again? (y/n) " << endl;
+            board->reset();
+            computer->reset();
+        } else {
+            cout << "Stalemate, play again? (y/n) " << endl;
+            board->reset();
+            computer->reset();
+        }
+        cin >> yon;
+        if (yon == "n") {
+            again = false;
+        }
+    }
+    delete computer;
+    delete computerBoard;
+    delete board;
+}
+
 int main() {
-    cplayTwoPlayer();
+    cplayerOnePlayer();
+//    CBoard *board = new CBoard();
+//    CTree *t = new CTree(board, 0, 1);
+
+//    delete t;
+//    cplayTwoPlayer();
 
 //    tplayOnePlayer();
 /* Test code for TTT

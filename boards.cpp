@@ -261,7 +261,7 @@ int CBoard::checkWin() {
 }
 
 bool CBoard::checkValid(int c) {
-    return (c >= 0 && c < NUMCOLUMNS);
+    return (boardState[0][c] == 0 && c >= 0 && c < NUMCOLUMNS);
 }
 
 void CBoard::undo(int previousColumn) {

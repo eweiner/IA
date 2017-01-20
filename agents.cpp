@@ -1,10 +1,12 @@
 #include <vector>
 #include <algorithm>
+#include <stdlib.h>
+#include <time.h>
 #include "agents.h"
 #include "boards.h"
 
 /*
-Checks if there are 2 of the same type with an empty space in the middle
+ Checks if there are 2 of the same type with an empty space in the middle
 */
 int Tree::checkThree(int space1, int space2, int space3) {
     if (space1 == space2 && space3 == 0 && space1 != 0) {
@@ -20,7 +22,7 @@ int Tree::checkThree(int space1, int space2, int space3) {
 }
 
 /*
-Returns how many two in a rows there are for a given player
+ Returns how many two in a rows there are for a given player
 */
 int Tree::numTwos(int player, TBoard *board) {
     int num_two_in_a_row = 0;
@@ -43,7 +45,7 @@ int Tree::numTwos(int player, TBoard *board) {
 }
 
 /*
-Proprietary algorithm
+ Proprietary algorithm
 */
 double Tree::theuristic(int computerPlayer, TBoard *board) {
     int** boardState = board->getBoard();
@@ -145,7 +147,7 @@ void Tree::generateTree(int computerPlayer, int maxDepth, int depth) {
 }
 
 /*
-* Construct possibility tree of a given depth (even number)
+ Construct possibility tree of a given depth (even number)
 */
 Tree::Tree(TBoard *board, int depth, int player) {
     this->board = board;
@@ -158,7 +160,7 @@ Tree::Tree(TBoard *board, int depth, int player) {
 }
 
 Tree::~Tree() {
-//    delete board;
+  //    delete board;
     children.clear();
     
 }
@@ -198,12 +200,12 @@ int* TAgent::makeMove() {
         for (int c = 0; c < 3; c++) {
             if (board->checkValid(r,c)) {
                 possibleMoves.push_back(3*r+c);
-/*
+ /*
                 if (isCorner(r, c) || (r == 1 && c == 1)) {
                     t->getChildren()[currentIndex]->setValue(t->getChildren()[currentIndex]->getValue() + 0.05);
                     currentIndex++;
                 }
-*/
+ */
             }
         }
     }
@@ -237,5 +239,239 @@ void TAgent::printValueTree(Tree *t) {
 
 Tree* TAgent::getTree() {
     return t;
+}
+
+int CTree::check4for3(int space1, int space2, int space3, int space4) {
+    if (space1 == space2 && space2 == space3 && space1 != 0 && space4 == 0) {
+        return space1;
+    }
+    if (space2 == space3 && space3 == space4 && space2 != 0 && space1 == 0) {
+        return space2;
+    }
+    if (space1 == space3 && space3 == space4 && space1 != 0 && space2 == 0) {
+        return space1;
+    }
+    if (space1 == space2 && space2 == space4 && space1 != 0 && space3 == 0) {
+        return space1;
+    }
+    return 0;
+}
+
+int CTree::check4for2(int space1, int space2, int space3, int space4) {
+    if (space1 == space2 && space3 == space4 && space1 != 0 && space3 == 0) {
+        return space1;
+    }
+    if (space2 == space3 && space1 == space4 && space2 != 0 && space1 == 0) {
+        return space2;
+    }
+    if (space3 == space4 && space1 == space2 && space3 != 0 && space1 == 0) {
+        return space3;
+    }
+    if (space1 == space4 && space2 == space3 && space1 != 0 && space2 == 0) {
+        return space1;
+    }
+    if (space1 == space3 && space2 == space4 && space1 != 0 && space4 == 0) {
+        return space1;
+    }
+    if (space2 == space4 && space1 == space3 && space2 != 0 && space1 == 0) {
+        return space2;
+    }
+    return 0;
+
+}
+
+int CTree::numThrees(int player, CBoard *board) {
+    int numThrees = 0;
+    int** boardState = board->getBoard();
+    //Horizontal Check
+    for (int r = 0; r < board->NUMROWS; r++) {
+        for (int c = 0; c < board->NUMCOLUMNS - 3; c++) {
+            if (check4for3(boardState[r][c], boardState[r][c + 1], boardState[r][c + 2], 
+                boardState[r][c + 3]) == player) {
+                    numThrees++;
+                }
+        }
+    }
+    //Vertical Check
+    for (int c = 0; c < board->NUMCOLUMNS; c++) {
+        for (int r = 0; r < board->NUMROWS - 3; r++) {
+            if (check4for3(boardState[r][c], boardState[r + 1][c], boardState[r + 2][c], 
+                boardState[r + 3][c]) == player) {
+                    numThrees++;
+                }
+        }
+    }
+    //Left to right check
+    for (int r = 0; r < board->NUMROWS - 3; r++) {
+        for (int c = 0; c < board->NUMCOLUMNS - 3; c++) {
+            if (check4for3(boardState[r][c], boardState[r + 1][c + 1], boardState[r + 2][c + 2], 
+                boardState[r + 3][c + 3]) == player) {
+                    numThrees++;
+                }
+        }
+    }
+
+    for (int r = 0; r < board->NUMROWS - 3; r++) {
+        for (int c = board->NUMCOLUMNS - 1; c >= 3; c--) {
+            if (check4for3(boardState[r][c], boardState[r + 1][c - 1], boardState[r + 2][c - 2], 
+                boardState[r + 3][c - 3]) == player) {
+                    numThrees++;
+                }
+        }
+    }
+    
+    return numThrees;
+
+}
+
+int CTree::numTwos(int player, CBoard *board) {
+    int** boardState = board->getBoard();
+    int numTwos = 0;
+    //Horizontal Check
+    for (int r = 0; r < board->NUMROWS; r++) {
+        for (int c = 0; c < board->NUMCOLUMNS - 3; c++) {
+            if (check4for2(boardState[r][c], boardState[r][c + 1], boardState[r][c + 2], 
+                boardState[r][c + 3]) == player) {
+                    numTwos++;
+                }
+        }
+    }
+    //Vertical Check
+    for (int c = 0; c < board->NUMCOLUMNS; c++) {
+        for (int r = 0; r < board->NUMROWS - 3; r++) {
+            if (check4for2(boardState[r][c], boardState[r + 1][c], boardState[r + 2][c], 
+                boardState[r + 3][c]) == player) {
+                    numTwos++;
+                }
+        }
+    }
+    //Left to right check
+    for (int r = 0; r < board->NUMROWS - 3; r++) {
+        for (int c = 0; c < board->NUMCOLUMNS - 3; c++) {
+            if (check4for2(boardState[r][c], boardState[r + 1][c + 1], boardState[r + 2][c + 2], 
+                boardState[r + 3][c + 3]) == player) {
+                    numTwos++;
+                }
+        }
+    }
+
+    for (int r = 0; r < board->NUMROWS - 3; r++) {
+        for (int c = board->NUMCOLUMNS - 1; c >= 3; c--) {
+            if (check4for2(boardState[r][c], boardState[r + 1][c - 1], boardState[r + 2][c - 2], 
+                boardState[r + 3][c - 3]) == player) {
+                    numTwos++;
+                }
+        }
+    }
+    
+    return numTwos;
+}
+
+double CTree::cheuristic(int computerPlayer, CBoard *board) {
+    double score = 0;
+    if (board->checkWin() == computerPlayer) {
+        score = 10000.0;
+    } else if (board->checkWin() != 0 && board->checkWin() != computerPlayer) {
+        score += -10000.0;
+    } else if (board->getNumMoves() == 42) {
+        score += 0.0;
+    } 
+        score += (numTwos(computerPlayer, board) * 2);
+        score -= (numTwos(3 - computerPlayer, board));
+        score += (numThrees(computerPlayer, board) * 100);
+        score -= (numThrees(3 - computerPlayer, board) * 51);
+    return score;
+}
+CTree::CTree(CBoard *board, int depth, int player) {
+    this->board = board;
+    this->depth = depth;
+    generateTree(player, 2, depth);
+}
+
+CTree::~CTree() {
+    children.clear();
+}
+
+void CTree::generateTree(int computerPlayer, int maxDepth, int depth) {
+    int turn = board->getNumMoves() % 2 + 1;
+    for (int c = 0; c < board->NUMCOLUMNS; ++c) {
+        if(board->checkValid(c)) {
+            board->drop(c, turn);
+            previousCoordinate = c;
+            if (depth < maxDepth) {
+                children.push_back(new CTree(board, depth + 1, computerPlayer));
+                if (board->checkWin() > 0 || board->getNumMoves() == 42)
+                    value = cheuristic(computerPlayer, board);
+            } else {
+                value = cheuristic(computerPlayer, board);
+
+            }
+            board->undo(previousCoordinate); 
+        }
+    }
+    
+    if (children.size() > 0) {
+        
+        if (computerPlayer == turn) {
+            nextMoveIndex = 0;
+            for (int i = 0; i < children.size(); i++) {
+                if (children[i] > children[nextMoveIndex]) {
+                    nextMoveIndex = i;
+                    value = children[i]->getValue();
+                }
+            }
+        } else {
+            nextMoveIndex = 0;
+            for (int i = 0; i < children.size(); i++) {
+                if (children[i] < children[nextMoveIndex]) {
+                    nextMoveIndex = i;
+                    value = children[i]->getValue();
+                }
+            }
+        }
+        
+    }
+
+}
+
+CAgent::CAgent(int computerPlayer, CBoard *startingBoard) {
+    color = computerPlayer;
+    board = startingBoard;
+    t = new CTree(startingBoard, 0, computerPlayer);
+}
+
+CAgent::~CAgent() {
+    delete t;
+}
+
+int CAgent::makeMove() {
+    int maxIndex = 0;
+    int currentIndex = 0;
+    std::vector<int> possibleMoves;
+    for (int c = 0; c < board->NUMCOLUMNS; c++) {
+        if (board->checkValid(c)) {
+            possibleMoves.push_back(c);
+ /*
+                if (isCorner(r, c) || (r == 1 && c == 1)) {
+                    t->getChildren()[currentIndex]->setValue(t->getChildren()[currentIndex]->getValue() + 0.05);
+                    currentIndex++;
+                }
+ */
+            }
+        }
+    
+
+    for (int i = 1; i < t->getChildren().size(); i++) {
+        if (t->getChildren()[i]->getValue() > t->getChildren()[maxIndex]->getValue()) {
+            maxIndex = i;
+        }
+    }
+    return possibleMoves[maxIndex];
+}
+
+void CAgent::updateBoard(int column, int mover) {
+    board->drop(column, mover);
+    delete t;
+    t = new CTree(board, 0, color);
 }
 
