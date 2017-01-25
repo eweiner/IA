@@ -59,11 +59,7 @@ class CTree {
         int numTwos(int player, CBoard *board);
         double cheuristic(int computerPlayer, CBoard *board);
         CTree(CBoard *board, int depth, int player);
- //       Tree(int**boardState, int turn, int depth);
         ~CTree();
-//        double CTree::mistakeProbability(int length, double lastProbability);
-//        void CTree::orderChildren();
-        void printPath();
         std::vector<CTree*> getChildren(){return children;}
         double getValue() {return value;}
         void setValue(double value) {this->value = value;}
