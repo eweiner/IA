@@ -61,6 +61,8 @@ class CTree {
         CTree(CBoard *board, int depth, int player);
  //       Tree(int**boardState, int turn, int depth);
         ~CTree();
+//        double CTree::mistakeProbability(int length, double lastProbability);
+//        void CTree::orderChildren();
         void printPath();
         std::vector<CTree*> getChildren(){return children;}
         double getValue() {return value;}
@@ -79,7 +81,7 @@ class CAgent {
         void updateBoard(int column, int mover);
         void printValueTree(CTree *t);
         CTree* getTree() {return t;}
-        void reset() {board->reset();}
+        void reset();
         int getColor() {return color;}
 };
 #endif

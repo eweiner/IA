@@ -166,11 +166,13 @@ void cplayerOnePlayer() {
             cout << "Please enter column for move: (0-6) ";
             cin >> column;
             valid = board->drop(column, 2);
-            if (valid == -1) {
+            while (valid == -1) {
                 cout << "Please make a valid move" << endl;
-            } else {
-                computer->updateBoard(column, 2);
+                cout << "Please enter column for move: (0-6) ";
+                cin >> column;
+                valid = board->drop(column, 2);
             }
+            computer->updateBoard(column, 2);
         }
         board->print();
         if (board->getNumMoves() < 42 && board->checkWin() != 0) {

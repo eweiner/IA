@@ -126,7 +126,7 @@ void Tree::generateTree(int computerPlayer, int maxDepth, int depth) {
         if (computerPlayer == board->strToNum(turn)) {
             nextMoveIndex = 0;
             for (int i = 0; i < children.size(); i++) {
-                if (children[i] > children[nextMoveIndex]) {
+                if (children[i]->getValue() > children[nextMoveIndex]->getValue()) {
                     nextMoveIndex = i;
                     value = children[i]->getValue();
                 }
@@ -134,7 +134,7 @@ void Tree::generateTree(int computerPlayer, int maxDepth, int depth) {
         } else {
             nextMoveIndex = 0;
             for (int i = 0; i < children.size(); i++) {
-                if (children[i] < children[nextMoveIndex]) {
+                if (children[i]->getValue() < children[nextMoveIndex]->getValue()) {
                     nextMoveIndex = i;
                     value = children[i]->getValue();
                 }
@@ -370,28 +370,49 @@ int CTree::numTwos(int player, CBoard *board) {
 double CTree::cheuristic(int computerPlayer, CBoard *board) {
     double score = 0;
     if (board->checkWin() == computerPlayer) {
-        score = 10000.0;
+        score = 11000.0;
     } else if (board->checkWin() != 0 && board->checkWin() != computerPlayer) {
         score += -10000.0;
     } else if (board->getNumMoves() == 42) {
         score += 0.0;
     } 
-        score += (numTwos(computerPlayer, board) * 2);
+        score += (numTwos(computerPlayer, board));
         score -= (numTwos(3 - computerPlayer, board));
         score += (numThrees(computerPlayer, board) * 100);
-        score -= (numThrees(3 - computerPlayer, board) * 51);
+        score -= (numThrees(3 - computerPlayer, board) * 100);
     return score;
 }
 CTree::CTree(CBoard *board, int depth, int player) {
     this->board = board;
     this->depth = depth;
-    generateTree(player, 2, depth);
+    generateTree(player, 4, depth);
 }
 
 CTree::~CTree() {
     children.clear();
 }
 
+/*
+double CTree::mistakeProbability(int length, double lastProbability) {
+    if (length == 1)
+        return lastProbability;
+    return mistakeProbability((length - 1), (lastProbability/2));
+}
+void CTree::orderChildren() {
+    CTree *tmp;
+    for (int i = 0; i < children.size(); i++) {
+        int minIndex = i;
+        for (int j = i; j < children.size; j++) {
+            if (children[j]->getValue() < children[minIndex]->getValue()) {
+                minIndex = j;
+            }
+        }
+        tmp = children[i];
+        children[i] = children[minIndex];
+        children[minIndex] = tmp;
+    }
+}
+*/
 void CTree::generateTree(int computerPlayer, int maxDepth, int depth) {
     int turn = board->getNumMoves() % 2 + 1;
     for (int c = 0; c < board->NUMCOLUMNS; ++c) {
@@ -411,19 +432,21 @@ void CTree::generateTree(int computerPlayer, int maxDepth, int depth) {
     }
     
     if (children.size() > 0) {
-        
-        if (computerPlayer == turn) {
+  //      orderChildren();
+       if (computerPlayer == turn) {
             nextMoveIndex = 0;
             for (int i = 0; i < children.size(); i++) {
-                if (children[i] > children[nextMoveIndex]) {
+                if (children[i]->getValue() > children[nextMoveIndex]->getValue()) {
                     nextMoveIndex = i;
                     value = children[i]->getValue();
                 }
             }
         } else {
+  //            std::vector<double> probabilities;
+
             nextMoveIndex = 0;
             for (int i = 0; i < children.size(); i++) {
-                if (children[i] < children[nextMoveIndex]) {
+                if (children[i]->getValue() < children[nextMoveIndex]->getValue()) {
                     nextMoveIndex = i;
                     value = children[i]->getValue();
                 }
@@ -445,6 +468,7 @@ CAgent::~CAgent() {
 }
 
 int CAgent::makeMove() {
+    srand (time(NULL));
     int maxIndex = 0;
     int currentIndex = 0;
     std::vector<int> possibleMoves;
@@ -460,13 +484,32 @@ int CAgent::makeMove() {
             }
         }
     
-
+    std::vector<int> maxValueMoves;
+    int currentMax = t->getChildren()[0]->getValue();
+    int currentValue;
+    maxValueMoves.push_back(possibleMoves[0]);
     for (int i = 1; i < t->getChildren().size(); i++) {
+        currentValue = t->getChildren()[i]->getValue();
+        if (t->getChildren()[i]->getValue() == t->getChildren()[maxIndex]->getValue() && maxIndex != i) {
+            maxValueMoves.push_back(possibleMoves[i]);
+        }
         if (t->getChildren()[i]->getValue() > t->getChildren()[maxIndex]->getValue()) {
+            currentMax = t->getChildren()[i]->getValue();
+            maxValueMoves.clear();
+            maxValueMoves.push_back(possibleMoves[i]);
             maxIndex = i;
+            i = 0;
         }
     }
-    return possibleMoves[maxIndex];
+    int column;
+
+    /* initialize random seed: */
+    
+    /* generate secret number between 1 and 10: */
+    std::cout << maxValueMoves.size() << std::endl;
+    int finalIndex = rand() % maxValueMoves.size();
+    column = maxValueMoves[finalIndex];
+    return column;
 }
 
 void CAgent::updateBoard(int column, int mover) {
@@ -475,3 +518,8 @@ void CAgent::updateBoard(int column, int mover) {
     t = new CTree(board, 0, color);
 }
 
+void CAgent::reset() {
+    board->reset();
+    delete t;
+    t = new CTree(board, 0, color);
+}
